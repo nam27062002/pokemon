@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using _Scripts.ObjectSO;
 using _Scripts.Pikachu;
 using _Scripts.UI;
@@ -15,29 +17,35 @@ namespace _Scripts.Grid
         [SerializeField] private float offset = 0.05f;
         [SerializeField] private GameObject pikachuPrefab;
         [SerializeField] private GameObject pikachuPrefabTest;
+        
         private Vector3 gridSize;
         private int[,] matrix;
+        private List<PikachuSingleManager> pikachuSingleManagers;
         public event EventHandler<FinishedSpawnEventArgs> OnFinishedSpawnGrid;
-
         public class FinishedSpawnEventArgs : EventArgs
         {
             public int GridWidth;
             public int GridHeight;
             public Vector3 GridSize;
+            public int[,] Matrix;
+            public List<PikachuSingleManager> PikachuSingleManagers;
         }
 
         private void Start()
         {
             matrix = new int[height,width];
+            pikachuSingleManagers = new List<PikachuSingleManager>();
             SetGridSize();
             SpawnRandomGrid();
+            
             OnFinishedSpawnGrid?.Invoke(this, new FinishedSpawnEventArgs()
             {
                 GridWidth = width,
                 GridHeight = height,
-                GridSize = gridSize
+                GridSize = gridSize,
+                Matrix = matrix,
+                PikachuSingleManagers = pikachuSingleManagers,
             });
-            ShowMatrix();
         }
         
 
@@ -79,6 +87,9 @@ namespace _Scripts.Grid
                         GameObject pikachu = Instantiate(pikachuPrefab);
                         PikachuSingleManager pikachuSingleManager = pikachu.GetComponent<PikachuSingleManager>();
                         pikachuSingleManager.SetSpritePikachu(selectedSprite);
+                        pikachuSingleManager.SetText(randomNumber.ToString());
+                        pikachuSingleManager.SetPoint(new Point(j,i));
+                        pikachuSingleManagers.Add(pikachuSingleManager);
                         pikachu.transform.position = startPosition + new Vector3(j * gridSize.x, -i * gridSize.y, 0);
                         pikachu.transform.parent = transform;
                     }
@@ -86,26 +97,6 @@ namespace _Scripts.Grid
                 }
             }
         }
-
-        private void ShowMatrix()
-        {
-            for (int i = 0; i < height; i++)
-            {
-                string s = "";
-                for (int j = 0; j < width; j++)
-                {
-                    if (matrix[i, j].ToString().Length == 1)
-                    {
-                        s += "0" + matrix[i, j] + " ";
-                    }
-                    else
-                    {
-                        s += matrix[i, j] + " ";
-                    }
-                }
-
-                Debug.Log(s);
-            }
-        }
+        
     }
 }

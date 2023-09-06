@@ -1,5 +1,7 @@
-using System;
+using System.Drawing;
+using TMPro;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace _Scripts.Pikachu
 {
@@ -10,6 +12,9 @@ namespace _Scripts.Pikachu
         [SerializeField] private SpriteRenderer background;
         [SerializeField] private Color colorDefault;
         [SerializeField] private Color colorHover;
+        [SerializeField] private TextMeshProUGUI textMeshProUGUI;
+        private Point point;
+        public Point Point => point;
         private bool isSelected;
 
         private void Start()
@@ -17,11 +22,19 @@ namespace _Scripts.Pikachu
             isSelected = false;
         }
 
+        public void SetPoint(Point p)
+        {
+            point = p;
+        }
         public void SetSpritePikachu(Sprite sprite)
         {
             rendererPikachu.sprite = sprite;
         }
 
+        public void SetText(string text)
+        {
+            textMeshProUGUI.text = text;
+        }
         private void OnMouseOver()
         {
             background.color = colorHover;
@@ -34,8 +47,22 @@ namespace _Scripts.Pikachu
 
         private void OnMouseDown()
         {
+            SetActiveSelected();
+        }
+
+        public void SetActiveSelected()
+        {
             isSelected = !isSelected;
             pikachuSelected.SetActive(isSelected);
+            if (isSelected)
+            {
+                GameManager.Instance.SetPointClicked(this);
+            }
+        }
+        
+        public void OnDestroy()
+        {
+            Destroy(gameObject);
         }
     }
 }
