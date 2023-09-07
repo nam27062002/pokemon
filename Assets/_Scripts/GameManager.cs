@@ -70,7 +70,6 @@ public class GameManager : MonoBehaviour
                         {
                             if (ClickHandle(point, new Point(j, i)))
                             {
-                                Debug.Log(point + " " + new Point(j,i));
                                 if (!running) running = true;
                                 break;
                             }
@@ -113,7 +112,31 @@ public class GameManager : MonoBehaviour
     {
         if (matrix[p1.Y, p1.X] != matrix[p2.Y, p2.X]) return false;
         bool check = CheckOneLineX(p1, p2);
-        if (!check) check = CheckOneLineY(p1, p2);
+        if (!check)
+        {
+            check = CheckOneLineY(p1, p2);
+            if (!check)
+            {
+                check = CheckTwoLine(p1, p2);
+                if (!check)
+                {
+                    
+                }
+                else
+                {
+                    Debug.Log($"TwoLine {p1} - {p2}");
+
+                }
+            }
+            else
+            {
+                Debug.Log($"OneLineY {p1} - {p2}");
+            }
+        }
+        else
+        {
+            Debug.Log($"OneLineX {p1} - {p2}");
+        }
         return check;
     }
 
@@ -124,12 +147,29 @@ public class GameManager : MonoBehaviour
         int max = Math.Max(p1.X, p2.X);
         return Enumerable.Range(min + 1, max - min - 1).All(i => matrix[p1.Y, i] == -1);
     }
+    
     private bool CheckOneLineY(Point p1, Point p2)
     {
         if (p1.X != p2.X) return false;
         int min = Math.Min(p1.Y, p2.Y);
         int max = Math.Max(p1.Y, p2.Y);
         return Enumerable.Range(min + 1, max - min - 1).All(i => matrix[i, p1.X] == -1);
+    }
+
+    private bool CheckTwoLine(Point p1, Point p2)
+    {
+        if (p1.X == p2.X || p1.Y == p2.Y) return false;
+        Point point1 = new Point(p2.X,p1.Y);
+        if (CheckOneLineX(p1, point1) && CheckOneLineY(p2, point1) && matrix[point1.Y, point1.X] == -1)
+        {
+            return true;
+        }
+        Point point2 = new Point(p1.X, p2.Y);
+        if (CheckOneLineY(p1,point2) && CheckOneLineY(point2,p2) && matrix[point2.Y,point2.X] == -1)
+        {
+            return true;
+        }
+        return false;
     }
     
     private PikachuSingleManager GetPikachuSingleManager(Point p)
