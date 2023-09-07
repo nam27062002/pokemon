@@ -14,11 +14,13 @@ namespace _Scripts.Pikachu
         [SerializeField] private Color colorHover;
         [SerializeField] private TextMeshProUGUI textMeshProUGUI;
         private Point point;
+        private bool isActive;
         public Point Point => point;
         private bool isSelected;
 
         private void Start()
         {
+            isActive = true;
             isSelected = false;
         }
 
@@ -37,16 +39,19 @@ namespace _Scripts.Pikachu
         }
         private void OnMouseOver()
         {
+            if (!isActive) return;
             background.color = colorHover;
         }
 
         private void OnMouseExit()
         {
+            if (!isActive) return;
             background.color = colorDefault;
         }
 
         private void OnMouseDown()
         {
+            if (!isActive) return;
             SetActiveSelected();
         }
 
@@ -54,15 +59,14 @@ namespace _Scripts.Pikachu
         {
             isSelected = !isSelected;
             pikachuSelected.SetActive(isSelected);
-            if (isSelected)
-            {
-                GameManager.Instance.SetPointClicked(this);
-            }
+            GameManager.Instance.SetPointClicked(this);
+            
         }
         
-        public void OnDestroy()
+        public void Hide()
         {
-            Destroy(gameObject);
+            isActive = false;
+            gameObject.SetActive(false);
         }
     }
 }
