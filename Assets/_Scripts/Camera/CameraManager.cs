@@ -1,10 +1,9 @@
-using System;
-using _Scripts.Grid;
+using _Scripts.Singleton;
 using UnityEngine;
 
 namespace _Scripts.Camera
 {
-    public class CameraManager : MonoBehaviour 
+    public class CameraManager : Singleton<CameraManager> 
     {
         [SerializeField] private float outlineCamera = .2f;
         private UnityEngine.Camera mainCamera;
@@ -13,15 +12,10 @@ namespace _Scripts.Camera
         {
             mainCamera = GetComponent<UnityEngine.Camera>();
         }
-        public void ResizeCameraToFitGrid(float width,float height,Vector3 gridSize)
+        public void ResizeCameraToFitGrid(float width,float height)
         {
-            if (mainCamera != null)
-            {
-                float cameraWidth = width * gridSize.x;
-                float cameraHeight = height * gridSize.y;
-                mainCamera.orthographicSize = ((cameraWidth > cameraHeight * mainCamera.aspect) ? cameraWidth / mainCamera.pixelWidth * mainCamera.pixelHeight : cameraHeight) / 2 + outlineCamera;
-            }
-            
+            if (mainCamera == null) return;
+            mainCamera.orthographicSize = ((width > height * mainCamera.aspect) ? width / mainCamera.pixelWidth * mainCamera.pixelHeight : height) / 2 + outlineCamera;
         }
         
     }
